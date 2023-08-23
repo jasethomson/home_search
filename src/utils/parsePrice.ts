@@ -1,0 +1,1 @@
+export const parsePrice = (price: string): string => price.replace(/(\$|,)/g, '');
