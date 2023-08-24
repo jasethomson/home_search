@@ -8,6 +8,7 @@ import { getHomeLinks } from './getHomeLinks';
 import { processHome } from './processHome';
 import { calcDistance } from './calcDistance';
 import { buildAddress } from './buildAddress';
+import { getFilters } from './getFilters';
 
 export {
     calcPricePerSqft,
@@ -19,5 +20,6 @@ export {
     getHomeLinks,
     processHome,
     calcDistance,
-    buildAddress
+    buildAddress,
+    getFilters
 };

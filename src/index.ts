@@ -1,10 +1,12 @@
 import { Home } from "./types";
-import { requestHtml, getHomeLinks, processHome } from "./utils";
+import { requestHtml, getHomeLinks, processHome, getFilters } from "./utils";
 require('dotenv').config();  
 
 (async () => {
     try {
-        const htmlStr = await requestHtml(process.env.MOUNT_TABOR_REDFIN_URL);
+        const filters = getFilters({ price: { min: '450k', max: '800k' }});
+        const htmlRequestUrl = process.env.MOUNT_TABOR_REDFIN_URL + filters;
+        const htmlStr = await requestHtml(htmlRequestUrl);
         const homeLinks = getHomeLinks(htmlStr);
         const homePromises: Promise<Home | null>[] = [];
         homeLinks.forEach((link, i) => {
