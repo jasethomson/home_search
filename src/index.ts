@@ -1,3 +1,4 @@
+import { readData } from "./db";
 import { Home } from "./types";
 import { requestHtml, getHomeLinks, processHome, getFilters } from "./utils";
 require('dotenv').config();  

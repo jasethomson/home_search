@@ -25,15 +25,3 @@ export interface Distance {
     distance: string;
     duration: string;
 }
-
-declare global {
-    namespace NodeJS {
-      interface ProcessEnv {
-        GCLOUD_MAPS_API_KEY: string;
-        GLOUD_MAPS_BASE_URL: string;
-        ROOT_REDFIN_URL: string;
-        MOUNT_TABOR_REDFIN_URL: string;
-        SELLWOOD_MORELAND_REDFIN_URL: string;
-      }
-    }
-}
