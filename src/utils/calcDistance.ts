@@ -13,9 +13,15 @@ export const calcDistance = async (destination: string, origin: string): Promise
             const directionJson = await directionsRes.json();
             if (directionJson?.routes?.[0]?.legs?.[0]) {
                 const routeLeg = directionJson.routes[0].legs[0];
+                if (routeLeg.distance.text.indexOf('mi') < 0) {
+                    throw new Error('Measurement found that is not in days');
+                }
+                if (routeLeg.duration.text.indexOf('mins') < 0) {
+                    throw new Error('Measurement found that is not in mins');
+                }
                 return {
-                    distance: routeLeg.distance.text,
-                    duration: routeLeg.duration.text
+                    distance: Number(routeLeg.distance.text.replace(/ mi/g, '')),
+                    duration: Number(routeLeg.duration.text.replace(/ mins/g, ''))
                 }
     
             } else {
