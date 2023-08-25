@@ -1,8 +1,5 @@
 import { createPool } from './createPool';
-import { readData } from './operations/readData';
-import { updateData } from './operations/updateData';
-import { deleteData } from './operations/deleteData';
-import { createData } from './operations/createData';
+import { readData, updateData, deleteData, createData } from './operations';
 
 export {
     createPool,
