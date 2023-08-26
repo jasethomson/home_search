@@ -1,10 +1,11 @@
 import { Home, Distance } from "./home";
-import { DBHome, DBContactInfo } from "./db";
+import { DBHome, DBContactInfo, InsertResult } from "./db";
 export {
     DBHome,
     DBContactInfo,
     Home,
-    Distance
+    Distance,
+    InsertResult
 }
 
 declare global {

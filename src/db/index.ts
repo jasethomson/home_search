@@ -1,10 +1,13 @@
 import { createPool } from './createPool';
-import { readData, updateData, deleteData, createData } from './operations';
+import { checkIfHomeExists } from './checkIfHomeExists';
+import { runQuery } from './runQuery';
+import { createContactInfo } from './createContactInfo';
+import { createHome } from './createHome';
 
 export {
     createPool,
-    readData,
-    updateData,
-    deleteData,
-    createData
+    runQuery,
+    checkIfHomeExists,
+    createContactInfo,
+    createHome
 }

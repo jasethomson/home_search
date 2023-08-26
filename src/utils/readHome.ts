@@ -2,7 +2,7 @@ import { load } from 'cheerio';
 import { DBContactInfo, DBHome, Home } from '../types';
 import { parsePrice, parseSqft } from '.';
 
-export const readHome = (htmlStr: string, homeLink: string): Home => {
+export const readHome = (htmlStr: string, homeLink: string, source_id: number): Home => {
     const $ = load(htmlStr);
     
     const priceHtml = $('[data-rf-test-id="abp-price"]').find('.statsValue').html();
@@ -26,6 +26,7 @@ export const readHome = (htmlStr: string, homeLink: string): Home => {
         miles_to_tabor_park: null,
         minutes_to_tabor_park: null,
         days_listed: null,
+        source_id
     };
 
     const contactInfo: DBContactInfo = {
@@ -70,7 +71,7 @@ export const readHome = (htmlStr: string, homeLink: string): Home => {
                 if (value) home.finished_square_feet = parseSqft(value);
             }
             if (html.indexOf('Stories') > -1) {
-                if (value) home.stories = Number(value);
+                if (value && value !== '—') home.stories = Number(value);
             }
             if (html.indexOf('Lot Size') > -1) {
                 if (value) home.lot_square_feet = parseSqft(value);

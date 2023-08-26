@@ -14,6 +14,7 @@ export interface DBHome {
     description:  string | null;
     miles_to_tabor_park: number | null;
     minutes_to_tabor_park: number | null;
+    source_id: number;
 }
 
 export interface DBContactInfo {
@@ -25,4 +26,8 @@ export interface DBContactInfo {
     state:  string | null;
     zip_code:  string | null;
     county:  string | null;
+}
+
+export interface InsertResult {
+    id: number;
 }
