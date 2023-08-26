@@ -1,8 +1,11 @@
 import { Home, Distance } from "./home";
-
+import { DBHome, DBContactInfo, InsertResult } from "./db";
 export {
+    DBHome,
+    DBContactInfo,
     Home,
-    Distance
+    Distance,
+    InsertResult
 }
 
 declare global {
@@ -18,6 +21,7 @@ declare global {
         DB_USER:string;
         DB_PASSWORD:string;
         DB_PORT:string;
+        MOUNT_TABOR_ADDRESS:string;
       }
     }
 }

@@ -14,8 +14,10 @@ require('dotenv').config();
             homePromises.push(processHome(homeLink));
         });
         const homes = await Promise.all(homePromises);
-        console.log(homes);
+        console.info(homes.filter(home => home !== null));
     } catch (err) {
         console.error(`Error thrown while running app: ${err}`);
     }
 })();
+
+

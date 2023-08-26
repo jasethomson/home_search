@@ -1,53 +1,64 @@
 import { load } from 'cheerio';
-import { calcPricePerSqft } from '.';
-import { Home } from '../types';
+import { DBContactInfo, DBHome, Home } from '../types';
+import { parsePrice, parseSqft } from '.';
 
-export const readHome = (htmlStr: string, homeLink: string): Home => {
+export const readHome = (htmlStr: string, homeLink: string, source_id: number): Home => {
     const $ = load(htmlStr);
-    const home: Home = {
-        homeLink,
-        price: $('[data-rf-test-id="abp-price"]').find('.statsValue').html(),
-        beds: $('[data-rf-test-id="abp-beds"]').find('.statsValue').html(),
-        baths: $('[data-rf-test-id="abp-baths"]').find('.statsValue').html(),
-        sqft: $('[data-rf-test-id="abp-sqFt"]').find('.statsValue').html(),
-        streetAddress: $('.full-address').find('[data-rf-test-id="abp-streetLine"]').attr('title') || null,
+    
+    const priceHtml = $('[data-rf-test-id="abp-price"]').find('.statsValue').html();
+    const bedsHtml = $('[data-rf-test-id="abp-beds"]').find('.statsValue').html();
+    const bathsHtml = $('[data-rf-test-id="abp-baths"]').find('.statsValue').html();
+    const squareFeetHtml = $('[data-rf-test-id="abp-sqFt"]').find('.statsValue').html();
+
+    const home: DBHome = {
+        id: null,
+        price: priceHtml ? parsePrice(priceHtml) : null,
+        est_monthly_payment: null,
+        beds: bedsHtml ? Number(bedsHtml) : null,
+        baths: bathsHtml ? Number(bathsHtml) : null,
+        stories: null,
+        square_feet: squareFeetHtml ? parseSqft(squareFeetHtml) : null,
+        finished_square_feet: null,
+        lot_square_feet: null,
+        property_type: null,
+        year_built: null,
+        description: $('.remarks').find('span').html(),
+        miles_to_tabor_park: null,
+        minutes_to_tabor_park: null,
+        days_listed: null,
+        source_id
+    };
+
+    const contactInfo: DBContactInfo = {
+        id: null,
+        home_id: null,
+        web_link: homeLink,
+        street: $('.full-address').find('[data-rf-test-id="abp-streetLine"]').attr('title') || null,
         city: null,
         state: null,
-        zip: null,
-        pricePerSqft: null,
-        propertyType: null,
-        estMonthlyPayment: null,
-        timeListed: null,
-        finishedSqft: null,
-        stories: null,
-        lotSize: null,
-        yearBuilt: null,
+        zip_code: null,
         county: null,
-        description: $('.remarks').find('span').html(),
-        distanceToTabor: null
-    };
-    if (home.price && home.sqft) {
-        home.pricePerSqft = calcPricePerSqft(home.price, home.sqft);
-    }      
+    }
 
     const cityStateZip = $('.full-address').find('[data-rf-test-id="abp-cityStateZip"]').html();
     if (cityStateZip) {
-        home.city = cityStateZip.split('<!-- -->, <!-- -->')[0];
-        home.state = cityStateZip.split('<!-- --> <!-- -->')[0].split('<!-- -->, <!-- -->')[1];
-        home.zip = cityStateZip.split('<!-- --> <!-- -->').pop() || null;
+        contactInfo.city = cityStateZip.split('<!-- -->, <!-- -->')[0];
+        contactInfo.state = cityStateZip.split('<!-- --> <!-- -->')[0].split('<!-- -->, <!-- -->')[1];
+        contactInfo.zip_code = cityStateZip.split('<!-- --> <!-- -->').pop() || null;
     }
 
     $('.keyDetailsList').find('.table-row').each((i, elem) => {
         const html = $(elem).html();
         if (html) {
+            const value = $(elem).find('.table-value').html();
             if (html.indexOf('Property Type') > -1) {
-                home.propertyType = $(elem).find('.table-value').html();
+                home.property_type = value;
             }
             if (html.indexOf('Est. Mo. Payment') > -1) {
-                home.estMonthlyPayment = $(elem).find('.table-value').html();
+                if (value) home.est_monthly_payment = parsePrice(value);
             }
             if (html.indexOf('Time on Redfin') > -1) {
-                home.timeListed = $(elem).find('.table-value').html();
+                if (value) home.days_listed = Number(value.replace(/ days/g, ''));
             }
         }
     });
@@ -55,26 +66,24 @@ export const readHome = (htmlStr: string, homeLink: string): Home => {
     $('.facts-table').find('.table-row').each((i, elem) => {
         const html = $(elem).html();
         if (html) {
+            const value = $(elem).find('.table-value').html();
             if (html.indexOf('Finished Sq. Ft.') > -1) {
-                home.finishedSqft = $(elem).find('.table-value').html();
+                if (value) home.finished_square_feet = parseSqft(value);
             }
             if (html.indexOf('Stories') > -1) {
-                home.stories = $(elem).find('.table-value').html();
+                if (value && value !== '—') home.stories = Number(value);
             }
             if (html.indexOf('Lot Size') > -1) {
-                home.lotSize = $(elem).find('.table-value').html();
+                if (value) home.lot_square_feet = parseSqft(value);
             }
             if (html.indexOf('Year Built') > -1) {
-                home.yearBuilt = $(elem).find('.table-value').html();
+                if (value) home.year_built = Number(value);
             }
             if (html.indexOf('County') > -1) {
-                home.county = $(elem).find('.table-value').html();
+                if (value) contactInfo.county = value;
             }
         }
     });
 
-    // const agentName = $('.agent-name').html(); // loaded after dom is loaded need puppeteer
-    // sale history needs puppeteer
-
-    return home;
+    return { home, contactInfo };
 }
